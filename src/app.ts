@@ -1,3 +1,4 @@
+import { renderBoxplot, renderScatterplot } from "./plots";
 
 
 

@@ -121,7 +121,7 @@ function renderDetailedTable(data: { points: any[] }, filters: any): void {
 }
 
 // Function to render the boxplot
-function renderBoxplot(): void {
+export function renderBoxplot(): void {
     console.log("Render Boxplot");
     if (data == null || data.length === 0) return;
 
@@ -208,7 +208,7 @@ function renderBoxplot(): void {
 
 
 // Function to render the scatterplot
-function renderScatterplot(): void {
+export function renderScatterplot(): void {
     if (data == null || data.length === 0) return;
 
     const filters = {
