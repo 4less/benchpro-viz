@@ -9,6 +9,7 @@
     "lib": ["es2016", "dom"],
     "strict": true,
     "esModuleInterop": true,
+    "module": "None",
     // "moduleResolution": "node",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
