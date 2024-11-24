@@ -1,0 +1,355 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* Navbar styling */
+#navbar {
+  display: flex;
+  align-items: center;
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1000;
+}
+#navbar h1 {
+  font-size: 1.2em;
+  margin: 0;
+  padding-right: 20px;
+}
+
+/* Navbar items aligned to the left */
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+/* Dropdown menu styling */
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-dropdown > span  {
+  background-color: #444;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.nav-button > span {
+  position: relative;
+  display: inline-block;
+  background-color: #444;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+
+.nav-dropdown:hover > span {
+  background-color: grey;
+}
+.nav-dropdown-content {
+  display: none;
+  position: absolute;
+  left: 0;
+  background-color: #444;
+  width: 100%;
+  cursor: pointer;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-top: 2px solid grey;
+}
+.nav-dropdown-content a {
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+.nav-dropdown-content a:hover {
+  background-color: #555;
+}
+.nav-dropdown:hover .nav-dropdown-content {
+  display: block;
+}
+
+/* Right-aligned help tab */
+#helpTab {
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-left: auto;
+}
+#helpTab:hover {
+  background-color: grey;
+}
+
+/* Modal styling */
+#helpModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  text-align: center;
+}
+.close-btn {
+  cursor: pointer;
+  background-color: #333;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-top: 20px;
+  display: inline-block;
+}
+
+/* Centered container for content */
+.container {
+  max-width: 1000px;
+  width: 100%;
+  padding: 0 20px;
+  margin-top: 80px;
+  box-sizing: border-box;
+}
+
+#fileInput {
+  display: block;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+.panel {
+  display: none;
+  padding-top: 20px;
+}
+.panel.active {
+  display: block;
+}
+
+
+
+/* Dropdown container */
+.checkbox-dropdown {
+    width: 100%;
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown button */
+.checkbox-dropbtn {
+  background-color: #4CAF50; /* Green */
+  text-align: left;
+  width: 100%;
+  color: #fff;
+  padding: 6px 8px;
+  font-size: 14px;
+  border: none;
+  border: 1px solid #4CAF50;
+/*  border-radius: 0px;*/
+  cursor: pointer;
+  appearance: menulist-button;
+/*  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);*/
+}
+
+/* Dropdown content */
+.checkbox-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 100px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 8px;
+    border: 1px solid #ccc;
+    z-index: 1;
+}
+
+/* Show dropdown on button hover or click */
+.checkbox-dropdown:hover .checkbox-dropdown-content,
+.checkbox-dropdown:focus-within .checkbox-dropdown-content {
+    display: block;
+}
+
+/* Style for each label and checkbox */
+.checkbox-dropdown-content label {
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #333;
+}
+
+.checkbox-dropdown-content input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Add a scrollbar for long lists */
+.checkbox-dropdown-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.checkbox-dropdown-content::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+.checkbox-dropdown-content::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+}
+
+
+
+
+/* The container must be positioned relative: */
+.custom-select {
+  position: relative;
+  font-family: Arial;
+}
+
+.custom-select select {
+  display: none; /*hide original SELECT element: */
+}
+
+.select-selected {
+  background-color: DodgerBlue;
+}
+
+/* Style the arrow inside the select element: */
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #fff transparent transparent transparent;
+}
+
+/* Point the arrow upwards when the select box is open (active): */
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent #fff transparent;
+  top: 7px;
+}
+
+/* style the items (options), including the selected item: */
+.select-items div,.select-selected {
+  color: #ffffff;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+  cursor: pointer;
+}
+
+/* Style items (options): */
+.select-items {
+  position: absolute;
+  background-color: DodgerBlue;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+}
+
+/* Hide the items when the select box is closed: */
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+
+.custom-file-upload {
+    color: #ffffff;
+    margin: 5px;
+    background-color: #4CAF50; /* Green */
+  /*  width: 200px;*/
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+  /*  border: 1px solid #ccc;*/
+  /*  border-radius: 0px;*/
+    cursor: pointer;
+  /*  appearance: none; /* Remove default select dropdown arrow */*/
+    -webkit-appearance: none; /* For Safari */
+    -moz-appearance: none; /* For Firefox */
+  /*  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);*/
+
+    position: relative;
+    display: inline-block;
+}
+
+.custom-file-upload:hover {
+    background-color: #4CAF50AA;
+}
+
+.custom-file-upload input[type="file"] {
+    display: none; /* Hide the actual file input */
+}
+
+.custom-file-upload label {
+    display: inline-block;
+    cursor: pointer;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+
+/* Parent container styling */
+.nav-row {
+    display: flex; /* Enables flexbox layout */
+    flex-direction: row; /* Aligns items in a row */
+    gap: 10px; /* Adds spacing between items */
+    background-color: #f9f9f9; /* For visualization */
+    width: 100%; /* Spans the entire width */
+    box-sizing: border-box; /* Includes padding in the width */
+}
+
+.ritem-heading {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+/* Flex items (child divs inside the parent) */
+.rowbox {
+    width: 100%;
+    text-align: center;
+    display: flex; /* Enables flexbox layout */
+    flex-direction: column; /* Stacks inner divs vertically */
+    justify-content: flex-start; /* Aligns inner divs to the top */
+    flex: 1; /* Allows items to grow/shrink equally */
+    box-sizing: border-box; /* Ensures padding is included in the size */
+}
+

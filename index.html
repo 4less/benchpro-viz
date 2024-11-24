@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benchpro VIZard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dropdown.css">
+  <script src="lib/plotly-latest.min.js"></script>
+  <script src="lib/gridjs.umd.js"></script>
+</head>
+
+<body>
+  <!-- Navbar with title and navigation links -->
+  <div id="navbar">
+    <div class="navbar-left">
+      <h1>Benchpro VIZard</h1>
+      <div class="nav-dropdown" id="data-link">
+        <span>Data</span>
+      </div>
+      <div class="nav-dropdown">
+        <span>Taxonomic profiling</span>
+        <div class="nav-dropdown-content">
+          <a id="prof-per-metric-link">per Metric</a>
+          <a id="prof-scatterplot-link">Scatterplot</a>
+        </div>
+      </div>
+      <div class="nav-dropdown">
+        <span>Abundances</span>
+        <div class="nav-dropdown-content">
+          <a id="abundances-per-metric-link">per Metric</a>
+          <a id="abundances-scatterplot-link">Scatterplot</a>
+        </div>
+      </div>
+    </div>
+    <div id="helpTab">Help</div>
+  </div>
+
+  </div>
+
+  <div id="helpModal">
+    <div class="modal-content">
+      <p>Help content goes here...</p>
+      <span class="close-btn">Close</span>
+    </div>
+  </div>
+
+  <div class="container">
+
+
+    <!-- Upload panel -->
+    <div id="upload-panel" class="panel active">
+      <h2>Benchmarking of taxonomic profilers Visualizer</h2>
+      <p>Benchpro VIZard is the visualization tool for benchpro, a taxonomic profiler benchmarking tool. Please follow
+        the
+        manual to generate the correct data for your own target tool, or load the example data containing many of the
+        most
+        used taxonomic profilers such as mOTUs3, MetaPhlAn 4, bracken, sylph, and more.</p>
+      <h2>Upload data</h2>
+      <div id="upload">
+        <div class="custom-file-upload">
+          <label for="file-uploaded-data">Upload Data File</label>
+          <input type="file" id="file-uploaded-data" accept=".tsv">
+        </div>
+
+        <div class="custom-file-upload">
+          <label for="file-uploaded-data-detailed">Upload Detailed Data File</label>
+          <input type="file" id="file-uploaded-data-detailed" accept=".tsv">
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Plots panel (aka main content) -->
+    <div id="plot-panel" class="panel">
+      <!-- Filter panel -->
+      <div class="nav-row">
+        <div class="rowbox">
+          <div class="ritem-heading">Metric</div>
+          <select id="metric" class="custom-select">
+            <option>Metric</option>
+          </select>
+        </div>
+        <div class="rowbox">
+          <div class="ritem-heading">Alt. Names</div>
+          <select id="allowAlternatives" class="custom-select">
+            <option>Allow Alt. Names</option>
+          </select>
+        </div>
+        <div class="rowbox">
+          <div class="ritem-heading">Dataset</div>
+          <select id="dataset" class="custom-select">
+            <option>Dataset</option>
+          </select>
+        </div>
+        <div class="rowbox">
+          <div class="ritem-heading">Taxonomy</div>
+          <div id="taxonomy" class="checkbox-dropdown">
+            <button class="checkbox-dropbtn">Select Taxonomy</button>
+            <div id="taxonomy-menu" class="checkbox-dropdown-content"></div>
+          </div>
+        </div>
+        <div class="rowbox">
+          <div class="ritem-heading">Tool</div>
+          <div id="tool" class="checkbox-dropdown">
+            <button class="checkbox-dropbtn">Select Tool</button>
+            <div id="tool-menu" class="checkbox-dropdown-content"></div>
+          </div>
+        </div>
+        <div class="rowbox">
+          <div class="ritem-heading">Rank</div>
+          <select id="rank" class="custom-select">
+            <option>Rank</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="plot">
+      </div>
+      <div id="tableHeader" style="width: 100%; margin-top: 50px;">
+        <label for="selected-sample">Selected Sample: </label>
+        <div id="selected-sample"></div>
+      </div>
+      <div id="sample-table" style="width: 100%; height: 400px; margin-top: 20px;"></div>
+    </div>
+
+    <script src="built/app.js" defer></script>
+</body>
+
+</html>

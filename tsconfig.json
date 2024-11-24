@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "./built",
+    "outFile": "./built/app.js",
+    "target": "es2015",  // Or 'es6'/'esnext' for more modern JavaScript features
+    "lib": ["es2016", "dom"],
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["./src/**/*"]
+}
