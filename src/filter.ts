@@ -1,7 +1,5 @@
 import { appData } from "./app";
 
-
-
 // Function to get the selected taxonomy values
 export function getSelectedTaxonomy(): string[] {
     const checkboxes = document.querySelectorAll('input[name="taxonomy"]:checked') as NodeListOf<HTMLInputElement>;
