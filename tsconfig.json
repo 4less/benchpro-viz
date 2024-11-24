@@ -7,7 +7,7 @@
     
     "target": "es2015",  // Or 'es6'/'esnext' for more modern JavaScript features
     "lib": ["es2016", "dom"],
-    "strict": true,
+    "strict": false,
     "esModuleInterop": true,
     "module": "None",
     // "moduleResolution": "node",
