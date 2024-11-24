@@ -1,3 +1,5 @@
+declare var Plotly: any;
+declare var gridjs: any;
 
 
 // Function to render the boxplot
