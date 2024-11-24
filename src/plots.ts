@@ -1,4 +1,6 @@
 import * as Plotly from 'plotly.js';
+import { appData } from './app';
+import { filterData, filterDataDetailed, getSelectedTaxonomy, getSelectedTool } from './filter';
 declare var gridjs: any;
 
 
@@ -62,14 +64,14 @@ function renderGrid(rows: any[]): void {
         'Correct',
     ];
 
-    if (detailed_grid) {
+    if (appData.detailed_grid) {
         // Update existing grid instance
-        detailed_grid.updateConfig({
+        appData.detailed_grid.updateConfig({
             data: filteredRows,
         }).forceRender();
     } else {
         // Create a new Grid.js instance if it doesn't exist
-        detailed_grid = new gridjs.Grid({
+        appData.detailed_grid = new gridjs.Grid({
             columns: columnFormatter,
             style: {
                 table: { fontSize: '12px' }, // Reduce font size
@@ -81,14 +83,14 @@ function renderGrid(rows: any[]): void {
             sort: true,
         });
 
-        detailed_grid.render(tableDiv);
+        appData.detailed_grid.render(tableDiv);
     }
 }
 
 
 // Assuming the structure of `data` and `filters` is defined elsewhere
 function renderDetailedTable(data: { points: any[] }, filters: any): void {
-    if (data_detailed == null) {
+    if (appData.data_detailed == null) {
         alert('To load more information for the sample you clicked, provide detailed data');
         return;
     }
@@ -123,7 +125,7 @@ function renderDetailedTable(data: { points: any[] }, filters: any): void {
 // Function to render the boxplot
 export function renderBoxplot(): void {
     console.log("Render Boxplot");
-    if (data == null || data.length === 0) return;
+    if (appData.data == null || appData.data.length === 0) return;
 
     const filters = {
         AllowAlternatives: (document.getElementById("allowAlternatives") as HTMLSelectElement).value,
@@ -173,7 +175,7 @@ export function renderBoxplot(): void {
             hovertext: hoverTexts,
             hoverinfo: "y+text",
             marker: {
-                color: toolColors[tool],
+                color: appData.toolColors[tool],
                 size: 6,
                 opacity: 0.7,
             },
@@ -181,7 +183,7 @@ export function renderBoxplot(): void {
     });
 
     const toolsSet = new Set(tools);
-    const localToolOrder = toolOrder.filter(item => toolsSet.has(item));
+    const localToolOrder = appData.toolOrder.filter(item => toolsSet.has(item));
 
     console.log(traces);
     console.log(localToolOrder);
@@ -209,7 +211,7 @@ export function renderBoxplot(): void {
 
 // Function to render the scatterplot
 export function renderScatterplot(): void {
-    if (data == null || data.length === 0) return;
+    if (appData.data == null || appData.data.length === 0) return;
 
     const filters = {
         AllowAlternatives: (document.getElementById("allowAlternatives") as HTMLSelectElement).value,
@@ -228,12 +230,12 @@ export function renderScatterplot(): void {
     const tools = filteredData.map(row => row['Tool']);
 
     // Assign colors based on the tool for each data point
-    const colors = tools.map(tool => toolColors[tool]);
+    const colors = tools.map(tool => appData.toolColors[tool]);
 
     // Unique set of tools for color mapping and legend
     const uniqueTools = [...new Set(tools)];
 
-    console.log(toolColors);
+    console.log(appData.toolColors);
     // Create a trace for each tool
     
     // Create a trace for each tool
@@ -253,7 +255,7 @@ export function renderScatterplot(): void {
             type: 'scatter',
             name: tool,  // Name for the legend
             marker: {
-                color: toolColors[tool],
+                color: appData.toolColors[tool],
                 size: 8, // Adjust the size of the dots
                 opacity: 0.7,  // Set opacity to 70%
                 line: { width: 0 } // Remove the outline around the dots
@@ -305,3 +307,4 @@ export function renderScatterplot(): void {
         renderDetailedTable(data, filters);
     }, { passive: true });
 }
+

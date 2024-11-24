@@ -1,17 +1,21 @@
 import { renderBoxplot, renderScatterplot } from "./plots";
 
 
+export let appData = {
+    data: null as any[] | null,
+    data_detailed: null as any[] | null,
+    detailed_grid: null as any | null,
+    toolColors: {} as Record<string, string>,
+    toolOrder: [] as string[],
+};
 
-let data: any[] | null = null;  // Allow null as an initial value
-let data_detailed: any[] | null = null;  // Allow null as an initial value
 
-let toolColors: Record<string, string> = {};
-let toolOrder: string[] = [];
-
-let detailed_grid: any; // Declare a variable to store the Grid.js instance
+// export let data: any[] | null = null;  // Allow null as an initial value
+// export let data_detailed: any[] | null = null;  // Allow null as an initial value
+// export let detailed_grid: any; // Declare a variable to store the Grid.js instance
 
 const Plots = ["Boxplot", "Scatterplot"];
-let activePlot = 'Boxplot';
+export let activePlot = 'Boxplot';
 
 const rankOrder = [
     "Strain", "Species", "Genus", "Family", "Order",
@@ -47,10 +51,8 @@ function assignDynamicToolColors(data: any[]): Record<string, string> {
 function assignDynamicToolOrder(data: any[]): string[] {
     console.log("assignDynamicToolOrder");
     const uniqueTools = [...new Set(data.map(row => row.Tool))];
-    toolOrder = Array.from(uniqueTools);
-    console.log(toolOrder);
+    let toolOrder = Array.from(uniqueTools);
     toolOrder.sort((a, b) => a.localeCompare(b));
-    console.log(toolOrder);
 
     return toolOrder;
 }
@@ -163,7 +165,7 @@ function readData(content: string): void {
     console.log("ReadData");
     const rows = content.trim().split("\n");
     const columns = rows[0].split("\t");
-    data = rows.slice(1).map(row => {
+    appData.data = rows.slice(1).map(row => {
         const values = row.split("\t");
         return columns.reduce((obj: DataRow, col, i) => {
             obj[col] = values[i];
@@ -171,18 +173,18 @@ function readData(content: string): void {
         }, {} as DataRow); // Cast empty object to DataRow type
     });
 
-    if (!data) {
+    if (!appData.data) {
         console.log("ReadData null");
         return; // Return an empty array if data is null or undefined
     }
 
     // Populate dropdowns with unique values
     const dropdowns = {
-        AllowAlternatives: [...new Set(data.map(d => d.AllowAlternatives))],
-        Dataset: [...new Set(data.map(d => d.Dataset))],
-        Taxonomy: [...new Set(data.map(d => d.Taxonomy))],
-        Tool: [...new Set(data.map(d => d.Tool))],
-        Rank: [...new Set(data.map(d => d.Rank))],
+        AllowAlternatives: [...new Set(appData.data.map(d => d.AllowAlternatives))],
+        Dataset: [...new Set(appData.data.map(d => d.Dataset))],
+        Taxonomy: [...new Set(appData.data.map(d => d.Taxonomy))],
+        Tool: [...new Set(appData.data.map(d => d.Tool))],
+        Rank: [...new Set(appData.data.map(d => d.Rank))],
     };
     populateDropdown("metric", ['F1', 'Sensitivity', 'Precision'], false);
     populateDropdown("allowAlternatives", dropdowns.AllowAlternatives, false);
@@ -192,10 +194,10 @@ function readData(content: string): void {
     populateRankDropdown(dropdowns.Rank);
 
     // Assign dynamic colors to tools
-    toolColors = assignDynamicToolColors(data);
-    toolOrder = assignDynamicToolOrder(data);
+    appData.toolColors = assignDynamicToolColors(appData.data);
+    appData.toolOrder = assignDynamicToolOrder(appData.data);
 
-    console.log(toolOrder);
+    console.log(appData.toolOrder);
 
     // Update the plot with the uploaded data
     renderActivePlot();
@@ -204,7 +206,7 @@ function readData(content: string): void {
 function readDataDetailed(content: string): void {
     const rows = content.trim().split("\n");
     const columns = rows[0].split("\t");
-    data_detailed = rows.slice(1).map(row => {
+    appData.data_detailed = rows.slice(1).map(row => {
         const values = row.split("\t");
         return columns.reduce((obj: DataRow, col, i) => {
             obj[col] = values[i];
@@ -213,51 +215,6 @@ function readDataDetailed(content: string): void {
     });
     // Update the plot with the uploaded data
     renderActivePlot();
-}
-
-// Function to filter data based on filters
-function filterData(filters: any): any[] {
-    if (!data) {
-        return []; // Return an empty array if data is null or undefined
-    }
-
-    return data.filter(d => {
-        return (
-            (!filters.AllowAlternatives || d.AllowAlternatives === filters.AllowAlternatives) &&
-            (!filters.Dataset || d.Dataset === filters.Dataset) &&
-            (!filters.Taxonomy || filters.Taxonomy.includes(d.Taxonomy)) &&
-            (!filters.Tool || filters.Tool.includes(d.Tool)) &&
-            (!filters.Rank || d.Rank === filters.Rank)
-        );
-    });
-}
-
-// Function to filter detailed data based on filters
-function filterDataDetailed(filters: any): any[] {
-    if (!data_detailed) {
-        return []; // Return an empty array if data is null or undefined
-    }
-
-    return data_detailed.filter(d => {
-        return (
-            (!filters.AllowAlternatives || d.AllowAlternatives === filters.AllowAlternatives) &&
-            (!filters.Dataset || d.Dataset === filters.Dataset) &&
-            (!filters.Taxonomy || filters.Taxonomy.includes(d.Taxonomy)) &&
-            (!filters.Tool || filters.Tool.includes(d.Tool)) &&
-            (!filters.Rank || d.Rank === filters.Rank)
-        );
-    });
-}
-
-// Function to get the selected taxonomy values
-function getSelectedTaxonomy(): string[] {
-    const checkboxes = document.querySelectorAll('input[name="taxonomy"]:checked') as NodeListOf<HTMLInputElement>;
-    return Array.from(checkboxes).map(checkbox => checkbox.value);
-}
-// Function to get the selected taxonomy values
-function getSelectedTool(): string[] {
-    const checkboxes = document.querySelectorAll('input[name="tool"]:checked') as NodeListOf<HTMLInputElement>;
-    return Array.from(checkboxes).map(checkbox => checkbox.value);
 }
 
 
@@ -305,7 +262,7 @@ document.getElementById('prof-scatterplot-link')!.addEventListener('click', func
 
 
 function switchPanel(panel: string) {
-    if (panel != "upload" && data == null) {
+    if (panel != "upload" && appData.data == null) {
         alert('Please upload or select data first');
     } else {
         document.querySelectorAll('.panel')!.forEach(p => p.classList.remove('active'));
