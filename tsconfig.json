@@ -9,10 +9,9 @@
     "lib": ["es2016", "dom"],
     "strict": false,
     "esModuleInterop": true,
-    "module": "None",
     // "moduleResolution": "node",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*", "./lib/**/*"]
 }

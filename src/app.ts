@@ -1,11 +1,5 @@
-// import * as Plotly from 'plotly.js';
 
-declare namespace Plotly {
-    function newPlot(divId: string, data: any, layout?: any): void;
-    // Add more Plotly functions/types as needed
-  }
-  
-declare var gridjs: any; // Basic declaration for gridjs
+
 
 let data: any[] | null = null;  // Allow null as an initial value
 let data_detailed: any[] | null = null;  // Allow null as an initial value
@@ -317,9 +311,3 @@ function switchPanel(panel: string) {
         document.getElementById(panel + '-panel')!.classList.add('active');
     }
 }
-
-
-
-
-
-
