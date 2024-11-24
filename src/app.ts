@@ -1,5 +1,6 @@
 import { renderBoxplot, renderScatterplot } from "./plots";
 
+console.log('App is running');
 
 export let appData = {
     data: null as any[] | null,
