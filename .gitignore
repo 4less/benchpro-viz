@@ -1,0 +1,5 @@
+legacy_files/*
+built/*
+node_modules/*
+dist/*
+dist/
