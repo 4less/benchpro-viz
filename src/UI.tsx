@@ -1,11 +1,10 @@
 import { Card, Col, Dropdown, DropdownButton, Form, Row } from "react-bootstrap";
-import { DataRow, Filter, filterData, filterData2, useDataContext } from "./DataContext";
+import { Filter, useDataContext } from "./DataContext";
 import { useEffect, useState } from "react";
-import { renderBoxplot } from "./Plots";
 import { Grid } from "gridjs-react";
 
 export function DropdownRow() {
-    const {data, filter, setFilter, updateFilter, dataDetailed, dropdownOptions, toolColors, toolOrder } = useDataContext();
+    const {setFilter, dropdownOptions } = useDataContext();
     const [selectedTaxonomies, setSelectedTaxonomies] = useState<string[]>(dropdownOptions.taxonomies);
     const [selectedMetric, setSelectedMetric] = useState<string>("F1");
     const [selectedDataset, setSelectedDataset] = useState<string>("All");

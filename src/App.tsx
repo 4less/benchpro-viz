@@ -7,20 +7,18 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { Card, Col, Dropdown, DropdownButton, Form, Row } from 'react-bootstrap';
-import Plotly, { Layout, PlotMouseEvent } from 'plotly.js';
+import { Card, Col, Form, Row } from 'react-bootstrap';
 import './index.css';
-import { assignDynamicToolColors, assignDynamicToolOrder, DataRow, Filter, filterData, filterData2, rankOrder, readDataLogic, useDataContext } from './DataContext';
-import { Grid } from "gridjs-react";
-import { Boxplot, TestBoxplot, defaultLayout, defaultTraces, metricLayout, metricTraces, renderBoxplot } from './Plots';
+import { assignDynamicToolColors, assignDynamicToolOrder, DataRow, filterData2, rankOrder, readDataLogic, useDataContext } from './DataContext';
+import { Boxplot, metricLayout, metricTraces } from './Plots';
 import { DetailedGrid, DropdownRow } from './UI';
-import RPlotly from 'react-plotly.js';
+import { PlotMouseEvent } from 'plotly.js';
 
 
 
 // Content for 'Data' view
 function DataPage() {
-  const { data, setData, dataDetailed, setDataDetailed, selectedDetailedFile, setSelectedDetailedFile, selectedFile, setSelectedFile, toolOrder, dropdownOptions, updateDropdownOptions, setToolColors, setToolOrder, toolColors } = useDataContext();
+  const { data, setData, dataDetailed, setDataDetailed, selectedDetailedFile, setSelectedDetailedFile, selectedFile, setSelectedFile, updateDropdownOptions, setToolColors, setToolOrder } = useDataContext();
 
   const statusStrData = data ? "success" : "nofile";
   const statusStrDataDetailed = dataDetailed ? "success" : "nofile";
@@ -190,9 +188,9 @@ function BoxplotPage() {
       return;
     }
     const points = event.points;
-    const mouseEvent = event.event;
+    // const mouseEvent = event.event;
     const clickedPoint = points[0];
-    const tool = clickedPoint.data.name;
+    // const tool = clickedPoint.data.name;
     const clickedID = clickedPoint.customdata as string;
     setClickedId(clickedID);
 
