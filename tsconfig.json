@@ -1,18 +1,7 @@
 {
-  "compilerOptions": {
-    "outDir": "./built",
-    "outFile": "./built/app.js",
-    "rootDir": "./src",
-    "module": "system",
-    
-    "target": "es2015",  // Or 'es6'/'esnext' for more modern JavaScript features
-    "lib": ["es2016", "dom"],
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "types": ["plotly.js"],
-    // "forceConsistentCasingInFileNames": true,
-},
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
 }

@@ -1,0 +1,143 @@
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark !important;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #FFFFFF !important;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  min-width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff !important;
+  width: 100vh !important;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+
+
+/* Make sure the row spans full width */
+.dropdown-row {
+  display: flex;
+  min-width: 600;
+  width: 800;
+  max-width: 900;
+}
+
+.dropdown-row .dropdown-toggle {
+  width: 100% !important;
+}
+
+/* Ensure all columns have the same width */
+.dropdown-col {
+  flex: 1; /* Makes each column take an equal share of the row */
+  padding: 2px !important; /* Remove any padding that might interfere with width */
+
+}
+
+/* Targeting all Card components inside elements with class 'dropdown-col' */
+.dropdown-col .card {
+  text-align: center;
+  color: white;
+  background: #555555;
+}
+
+.vspace-20 {
+  height: 20px !important;
+}
+
+.vspace-40 {
+  height: 40px !important;
+}
+
+.vspace-100 {
+  height: 100px !important;
+}
+
+.upload-success {
+  background-color: #E1F8DC !important; /* Green */
+}
+
+.upload-pending {
+  background-color: #FEF8DD !important; /* Yellow */
+}
+
+.upload-nofile {
+  background-color: #FFE7C7 !important; /* Red */
+}
+
+.upload-failed {
+  background-color: #F7D8BA !important; /* Red */
+}
+
+.parent-container {
+  display: flex;
+  justify-content: center; /* Center the table horizontally */
+}
+
+.center-table {
+  width: auto; /* Table takes up only as much space as needed */
+  max-width: 100%; /* Prevents it from exceeding container width */
+  margin: 0 auto; /* Ensures proper alignment if extra space exists */
+}
