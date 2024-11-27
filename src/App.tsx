@@ -97,6 +97,7 @@ function DataPage() {
       }}
     >
       <Card style={{ background: "white", padding: 20, textAlign: "center", border: "None" }}>
+        <div className='vspace-40'></div>
         <h2>Upload Your Data</h2>
         <hr></hr>
         <div className='vspace-20'></div>
@@ -116,6 +117,7 @@ function DataPage() {
                   <strong>Selected File:</strong> {selectedFile.name}
                 </div>
               )}
+              <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}><a href="https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data.tsv">Example data (2.9 MB)</a></Card>
             </Card>
           </Col>
           {/* Detailed data input */}
@@ -132,10 +134,16 @@ function DataPage() {
               {selectedDetailedFile && (
                 <div style={{ marginTop: '20px' }}>
                   <strong>Selected File:</strong> {selectedDetailedFile.name}
+                  
                 </div>
               )}
+              <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}><a href="https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data_detailed.tsv">Example detailed data (87.7 MB)</a></Card>
             </Card>
           </Col>
+          <div className='vspace-40'></div>
+          <hr></hr>
+          <div className='vspace-20'></div>
+          <p style={{width: "500"}}>To test the app, download the Example data file for "Data", upload it, and wait for the field to turn green. Then click on Taxonomic profiling and Boxplots to see the data. When you also upload "Detailed Data" you can click on individual data points in the boxplots and get additional information in a table below.</p>
         </Row>
 
       </Card>
@@ -246,9 +254,9 @@ function App() {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
-                <Nav.Link as={Link} to="/data">Data</Nav.Link>
+                <Nav.Link as={Link} to="benchpro-viz/data">Data</Nav.Link>
                 <NavDropdown title="Taxonomic Profiling" id="basic-nav-dropdown">
-                  <NavDropdown.Item as={Link} to="/boxplot">Boxplots (one Metric)</NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="benchpro-viz/boxplot">Boxplots (one Metric)</NavDropdown.Item>
                   <NavDropdown.Item href="#action/3.2">Scatterplot (two Metrics)</NavDropdown.Item>
                 </NavDropdown>
               </Nav>
@@ -260,9 +268,9 @@ function App() {
       <Container style={{ paddingTop: '20px' }}>
         <Routes>
           {/* Define routes for your pages */}
-          <Route path="/" element={<DataPage />} />
-          <Route path="/data" element={<DataPage />} />
-          <Route path="/boxplot" element={<BoxplotPage />} />
+          <Route path="benchpro-viz/" element={<DataPage />} />
+          <Route path="benchpro-viz/data" element={<DataPage />} />
+          <Route path="benchpro-viz/boxplot" element={<BoxplotPage />} />
         </Routes>
       </Container>
     </Router>
