@@ -7,14 +7,19 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { Card, Col, Form, Row } from 'react-bootstrap';
+import { Card, Col, Form, Row, Tab, Tabs } from 'react-bootstrap';
 import './index.css';
 import { assignDynamicToolColors, assignDynamicToolOrder, DataRow, filterData2, rankOrder, readDataLogic, useDataContext } from './DataContext';
-import { Boxplot, metricLayout, metricTraces } from './Plots';
-import { DetailedGrid, DropdownRow } from './UI';
-import { PlotMouseEvent } from 'plotly.js';
+import { metricLayout, metricTraces, profileTraces, scatterLayout, scatterSummaryTraces, scatterTraces } from './Plots';
+import { DetailedGrid, DownloadBox, DropdownRow } from './UI';
+import { Layout, PlotMouseEvent } from 'plotly.js';
+import Markdown from 'react-markdown'
 
-
+import upload_content from './../content/upload.md?raw';
+import Plot from 'react-plotly.js';
+import { mean, median } from './Utils';
+import { FalsePredictionAnalysisPage } from './FalsePredictionAnalysis';
+import { HomePage } from './Home';
 
 // Content for 'Data' view
 function DataPage() {
@@ -86,6 +91,46 @@ function DataPage() {
     }
   };
 
+
+  const loadFromLink = async () => {
+    const url = "https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data.tsv";
+
+    let response = await fetch(url);
+    let download_data = await response.blob();
+    let metadata = {
+      type: 'image/jpeg'
+    };
+    let file = new File([download_data], "test.jpg", metadata);
+    
+    setStatusData("pending");
+    setSelectedFile(file); // Update the state
+    let data = await readData(file); // Call the function with the file name
+
+    setData(data as DataRow[]);
+    populateDropdowns(data as DataRow[]);
+
+    setStatusData("success");
+  }
+
+  const loadDetailedFromLink = async () => {
+    const url = "https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data_detailed.tsv";
+
+    let response = await fetch(url);
+    let download_data = await response.blob();
+    let metadata = {
+      type: 'image/jpeg'
+    };
+    let file = new File([download_data], "data.tsv", metadata);
+    
+    setStatusData("pending");
+    setSelectedFile(file); // Update the state
+    let data = await readData(file); // Call the function with the file name
+
+    setDataDetailed(data as DataRow[]);
+
+    setStatusData("success");
+  }
+
   return (
     <div
       style={{
@@ -94,6 +139,8 @@ function DataPage() {
         flexDirection: 'column',  // Stack children vertically
         alignItems: 'center', // Center horizontally
         paddingTop: '20px',  // Add space for the navbar
+        maxWidth: '800px',
+        minWidth: '300',
       }}
     >
       <Card style={{ background: "white", padding: 20, textAlign: "center", border: "None" }}>
@@ -117,7 +164,13 @@ function DataPage() {
                   <strong>Selected File:</strong> {selectedFile.name}
                 </div>
               )}
-              <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}><a href="https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data.tsv">Example data (2.9 MB)</a></Card>
+              {/* <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}
+                onClick={() => loadFromLink()}>
+                Load Example data
+              </Card> */}
+              <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}>
+                <a href="https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data.tsv" target="_blank" download="data.tsv">Download Example data (2.9 MB)</a>
+              </Card>
             </Card>
           </Col>
           {/* Detailed data input */}
@@ -134,17 +187,32 @@ function DataPage() {
               {selectedDetailedFile && (
                 <div style={{ marginTop: '20px' }}>
                   <strong>Selected File:</strong> {selectedDetailedFile.name}
-                  
+
                 </div>
               )}
-              <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}><a href="https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data_detailed.tsv">Example detailed data (87.7 MB)</a></Card>
+              {/* <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}
+                onClick={() => loadDetailedFromLink()}>
+                Load Example detailed data (87.7 MB)
+              </Card> */}
+
+              <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}>
+                <a href="https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data_detailed.tsv">Download Example detailed data (87.7 MB)</a>
+              </Card>
             </Card>
           </Col>
+        </Row>
+        <Row style={{ textAlign: "center" }}>
+
           <div className='vspace-40'></div>
           <hr></hr>
           <div className='vspace-20'></div>
-          <p style={{width: "500"}}>To test the app, download the Example data file for "Data", upload it, and wait for the field to turn green. Then click on Taxonomic profiling and Boxplots to see the data. When you also upload "Detailed Data" you can click on individual data points in the boxplots and get additional information in a table below.</p>
         </Row>
+        <Row>
+          <div style={{ textAlign: 'left' }}>
+            <Markdown>{upload_content}</Markdown>
+          </div>
+        </Row>
+        {DownloadBox("Raw Profiles", "http://google.com")}
 
       </Card>
     </div>
@@ -152,9 +220,120 @@ function DataPage() {
 }
 
 // Content for 'Home' (dropdowns and boxplot)
-function BoxplotPage() {
+function ScatterplotPage() {
 
   const { data, dataDetailed, filter, toolOrder, toolColors } = useDataContext();
+
+  const [filteredData, setFilteredData] = useState<DataRow[]>([]);
+  const [gridData, setGridData] = useState<any[]>([]);
+  const [metric, setMetric] = useState<string>("F1");
+  const [localToolOrder, setLocalToolOrder] = useState<string[]>(toolOrder!);
+  const [sliderValue, setSliderValue] = useState<number>(1000);
+  const [sliderTableValue, setSliderTableValue] = useState<number>(1000);
+  const [clickedId, setClickedId] = useState<string>("");
+
+  useEffect(() => {
+    console.log("Filter changed...");
+    const refilter = filterData2(data, filter!);
+    setMetric(filter!.metric);
+
+    setFilteredData(refilter);
+    const uniqueTools = [...new Set(refilter.map(row => row.Tool))];
+
+    setLocalToolOrder(toolOrder ? toolOrder.filter(d => uniqueTools.includes(d)) : uniqueTools);
+  }, [filter, data]);
+
+  const layout = useMemo(() =>
+    scatterLayout({ metricX: "Precision", metricY: "Sensitivity", width: sliderValue }),
+    [sliderValue]
+  );
+  const traces = useMemo(() =>
+    scatterTraces({ filteredData, metricX: "Precision", metricY: "Sensitivity", toolColors: toolColors ?? {} }),
+    [filteredData, metric, toolColors]
+  );
+
+  const onClick = (event: Readonly<PlotMouseEvent>) => {
+    if (!dataDetailed) {
+      return;
+    }
+    const points = event.points;
+    // const mouseEvent = event.event;
+    const clickedPoint = points[0];
+    // const tool = clickedPoint.data.name;
+    const clickedID = clickedPoint.customdata as string;
+    setClickedId(clickedID);
+
+    const refilter = filterData2(dataDetailed, filter!).filter(d => d.ID == clickedID);
+    setGridData(refilter);
+  };
+
+
+
+  const scatterSummaryTracesVar = useMemo(() => {
+    return scatterSummaryTraces({ filteredData: filteredData!, toolColors: toolColors ?? {} });
+  },
+    [filteredData]
+  );
+
+  if (!data) {
+    return <h1>Please upload data first</h1>;
+  }
+
+  return (
+    <div
+      style={{
+        height: '100vh',  // Full viewport height
+        display: 'flex',  // Use flexbox to center content
+        flexDirection: 'column',  // Stack children vertically
+        alignItems: 'center', // Center horizontally
+        paddingTop: '50px',  // Add space for the navbar
+      }}
+    >
+      <Form.Range
+        min={500}
+        max={2000}
+        style={{ padding: 30, width: "600px" }}
+        value={sliderValue}
+        onChange={(event) => setSliderValue(parseInt(event.target.value))} />
+      {DropdownRow()}
+
+      <Tabs
+        defaultActiveKey="samples"
+        id="uncontrolled-tab-example"
+        className="mb-3"
+      >
+        <Tab eventKey="samples" title="Samples" style={{ justifyItems: "center" }}>
+          <Plot data={traces} layout={layout} onClick={onClick} />
+          <hr style={{ margin: "40px", width: "100%" }}></hr>
+          <h3>Selected Sample: {clickedId}</h3>
+          <Form.Range
+            min={500}
+            max={2000}
+            style={{ padding: 30, width: "600px" }}
+            value={sliderTableValue}
+            onChange={(event) => setSliderTableValue(parseInt(event.target.value))} />
+
+          <DetailedGrid dataDetailed={gridData} width={sliderTableValue} />
+          {/* <hr style={{ margin: "400px", width: "100%" }}></hr> */}
+        </Tab>
+
+        {/* Profile tab */}
+        <Tab eventKey="summary" title="Summary">
+          <Plot data={scatterSummaryTracesVar} layout={layout} onClick={onClick} />
+        </Tab>
+
+      </Tabs>
+
+
+    </div>
+  );
+}
+
+
+
+// Content for 'Home' (dropdowns and boxplot)
+function BoxplotPage() {
+  const { data, dataDetailed, filter, toolOrder, toolColors, sortBy } = useDataContext();
 
   const [filteredData, setFilteredData] = useState<DataRow[]>([]);
   const [gridData, setGridData] = useState<any[]>([]);
@@ -182,13 +361,79 @@ function BoxplotPage() {
     setXaxisTitle(filter!.metric);
   }, [filter!.metric])
 
-  const layout = useMemo(() => 
-    metricLayout({ metric, toolOrder: localToolOrder, xaxisTitle: xaxisTitle ?? "Default Title", width: sliderValue }), 
+  useEffect(() => {
+    const tools = [...new Set(filteredData.map(d => d.Tool))];
+    let toolMetric: [string, number][] = tools.map((tool: string) => {
+      const toolData = filteredData.filter(d => d.Tool === tool);
+      const activeMetric = toolData.map(row => row[metric]);
+
+      let sortByNumber: number = 0;
+      const values: number[] = activeMetric.map((v) => parseFloat(v));
+      if (sortBy[0] === "Median") {
+        sortByNumber = median(values);
+      } else if (sortBy[0] === "Min") {
+        sortByNumber = Math.min(...values);
+      } else if (sortBy[0] === "Max") {
+        sortByNumber = Math.max(...values);
+      } else if (sortBy[0] === "Mean") {
+        sortByNumber = mean(values);
+      }
+
+      return [tool, sortByNumber];
+    });
+
+    toolMetric.sort((a, b) => b[1] - a[1]);
+
+    setLocalToolOrder(toolMetric.map((x) => x[0]));
+    console.log("New Tool Order: " + localToolOrder);
+
+  }, [sortBy, filteredData]);
+
+  const layout = useMemo(() =>
+    metricLayout({ metric, toolOrder: localToolOrder, xaxisTitle: xaxisTitle ?? "Default Title", width: sliderValue }),
     [title, metric, localToolOrder, xaxisTitle, sliderValue]
   );
   const traces = useMemo(() =>
     metricTraces({ filteredData, metric, toolColors: toolColors ?? {} }),
     [filteredData, metric, toolColors]
+  );
+
+  const profileBarplotTraces = useMemo(() => {
+    const refilter: DataRow[] = gridData.filter(d => d.ID == clickedId);
+    return profileTraces({ data: refilter });
+  },
+    [gridData]
+  );
+
+
+  const scatterTraces = useMemo(() => {
+    return scatterSummaryTraces({ filteredData: filteredData!, toolColors: toolColors ?? {} });
+  },
+    [filteredData]
+  );
+
+  const gridLayout = useMemo(() => {
+    const refilter: DataRow[] = gridData.filter(d => d.ID == clickedId);
+    const orderRows = refilter.sort((a, b) => {
+      let aa: number = parseFloat(a["Type"] == "TP" || a["Type"] == "FN" ? a["GoldStdAbundance"] : a["PredictionAbundance"]);
+      let ba: number = parseFloat(b["Type"] == "TP" || b["Type"] == "FN" ? b["GoldStdAbundance"] : b["PredictionAbundance"]);
+      return ba - aa;
+    });
+    console.dir(orderRows.map((row) => row["Rank"]));
+    const order = orderRows.map((row) => row["Name"]);
+    console.log("Order: ");
+    console.dir(order);
+    return {
+      barmode: 'group',
+      bargap: 0.1,
+      width: sliderTableValue,
+      xaxis: {
+        categoryorder: 'array', // Ensure x-axis categories follow the given order
+        categoryarray: order, // Set the order explicitly
+      }
+    } as Layout;
+  },
+    [gridData, sliderTableValue]
   );
 
   const onClick = (event: Readonly<PlotMouseEvent>) => {
@@ -210,6 +455,15 @@ function BoxplotPage() {
     return <h1>Please upload data first</h1>;
   }
 
+  const onClickBarplot = (event: Readonly<PlotMouseEvent>) => {
+    if (!dataDetailed) {
+      return;
+    }
+    console.log(event.points);
+    console.log(event.points[0]);
+  }
+
+
   return (
     <div
       style={{
@@ -220,25 +474,40 @@ function BoxplotPage() {
         paddingTop: '50px',  // Add space for the navbar
       }}
     >
-      <Form.Range 
+      <Form.Range
         min={500}
         max={2000}
-        style={{padding: 30, width: "600px" }}
+        style={{ padding: 30, width: "600px" }}
         value={sliderValue}
-        onChange={(event) => setSliderValue(parseInt(event.target.value))}/>
+        onChange={(event) => setSliderValue(parseInt(event.target.value))} />
       {DropdownRow()}
-      <Boxplot traces={traces} layout={layout} onClick={onClick} />
-      <hr style={{margin: "40px", width: "100%"}}></hr>
+
+      <Plot data={traces} layout={layout} onClick={onClick} />
+      <hr style={{ margin: "40px", width: "100%" }}></hr>
       <h3>Selected Sample: {clickedId}</h3>
       <Form.Range
         min={500}
         max={2000}
-        style={{padding: 30, width: "600px" }}
+        style={{ padding: 30, width: "600px" }}
         value={sliderTableValue}
-        onChange={(event) => setSliderTableValue(parseInt(event.target.value))}/>
+        onChange={(event) => setSliderTableValue(parseInt(event.target.value))} />
 
-      <DetailedGrid dataDetailed={gridData} width={sliderTableValue} />
-      <hr style={{margin: "400px", width: "100%"}}></hr>
+      <Tabs
+        defaultActiveKey="home"
+        id="uncontrolled-tab-example"
+        className="mb-3"
+      >
+        <Tab eventKey="home" title="Sample Information">
+          <Plot data={profileBarplotTraces} layout={gridLayout} />
+          <DetailedGrid dataDetailed={gridData} width={sliderTableValue} />
+        </Tab>
+
+        {/* Profile tab */}
+        <Tab eventKey="profile" title="Profile">
+          <Plot data={profileBarplotTraces} layout={gridLayout} />
+        </Tab>
+      </Tabs>
+      <hr style={{ margin: "400px", width: "100%" }}></hr>
     </div>
   );
 }
@@ -254,12 +523,25 @@ function App() {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
-                <Nav.Link as={Link} to="benchpro-viz/data">Data</Nav.Link>
+                <Nav.Link as={Link} to="benchpro-viz/home">Home</Nav.Link>
+
                 <NavDropdown title="Taxonomic Profiling" id="basic-nav-dropdown">
+                  <NavDropdown.Item as={Link} to="benchpro-viz/data">Data + Upload</NavDropdown.Item>
+                  <hr></hr>
                   <NavDropdown.Item as={Link} to="benchpro-viz/boxplot">Boxplots (one Metric)</NavDropdown.Item>
-                  <NavDropdown.Item href="#action/3.2">Scatterplot (two Metrics)</NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="benchpro-viz/scatterplot">Scatterplot (two Metrics)</NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="benchpro-viz/false_analysis">False Prediction Analysis</NavDropdown.Item>
+                </NavDropdown>
+
+                <NavDropdown title="Strain-Resolved Analysis" id="basic-nav-dropdown">
+                  <NavDropdown.Item as={Link} to="">Inactive</NavDropdown.Item>
+                </NavDropdown>
+
+                <NavDropdown title="Alignment Analysis" id="basic-nav-dropdown">
+                  <NavDropdown.Item as={Link} to="">Inactive</NavDropdown.Item>
                 </NavDropdown>
               </Nav>
+
             </Navbar.Collapse>
           </Container>
         </Navbar>
@@ -268,9 +550,12 @@ function App() {
       <Container style={{ paddingTop: '20px' }}>
         <Routes>
           {/* Define routes for your pages */}
-          <Route path="benchpro-viz/" element={<DataPage />} />
+          <Route path="benchpro-viz/" element={<HomePage />} />
+          <Route path="benchpro-viz/home" element={<HomePage />} />
           <Route path="benchpro-viz/data" element={<DataPage />} />
           <Route path="benchpro-viz/boxplot" element={<BoxplotPage />} />
+          <Route path="benchpro-viz/scatterplot" element={<ScatterplotPage />} />
+          <Route path="benchpro-viz/false_analysis" element={<FalsePredictionAnalysisPage />} />
         </Routes>
       </Container>
     </Router>

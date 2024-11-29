@@ -1,10 +1,11 @@
-import { Card, Col, Dropdown, DropdownButton, Form, Row } from "react-bootstrap";
-import { Filter, useDataContext } from "./DataContext";
+import { Card, Col, Dropdown, DropdownButton, Form, Row, Tabs, Tab } from "react-bootstrap";
+import { Filter, sortByMetrics, useDataContext } from "./DataContext";
 import { useEffect, useState } from "react";
 import { Grid } from "gridjs-react";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export function DropdownRow() {
-    const {setFilter, dropdownOptions } = useDataContext();
+    const { setFilter, sortBy, setSortBy, dropdownOptions } = useDataContext();
     const [selectedTaxonomies, setSelectedTaxonomies] = useState<string[]>(dropdownOptions.taxonomies);
     const [selectedMetric, setSelectedMetric] = useState<string>("F1");
     const [selectedDataset, setSelectedDataset] = useState<string>("All");
@@ -59,10 +60,15 @@ export function DropdownRow() {
         // You can perform additional actions here, such as fetching data or triggering other logic
     }, [selectedTaxonomies, selectedTools, selectedDataset, selectedAllowAlt, selectedMetric, selectedRank]); // Dependency array with selectedTaxonomies
 
+    // let xs: number = 12;
+    // let sm: number = 6;
+    // let md: number = 2;
+
+
     return (
         <Row className="dropdown-row">
             {/* Dropdown 1 */}
-            <Col xs={12} sm={6} md={2} className="dropdown-col">
+            <Col className="dropdown-col">
                 <Dropdown>
                     <DropdownButton variant="secondary" id="dropdown-1" title="Metric">
                         {dropdownOptions && dropdownOptions.metrics && dropdownOptions.metrics.length > 0 ? (
@@ -83,7 +89,7 @@ export function DropdownRow() {
             </Col>
 
             {/* Taxonomy Dropdown 2 */}
-            <Col xs={12} sm={6} md={2} className="dropdown-col">
+            <Col className="dropdown-col">
                 <Dropdown>
                     <DropdownButton variant="secondary" id="dropdown-2" title="Taxonomy">
                         {dropdownOptions && dropdownOptions.taxonomies && dropdownOptions.taxonomies.length > 0 ? (
@@ -111,7 +117,7 @@ export function DropdownRow() {
             </Col>
 
             {/* Dropdown 3 */}
-            <Col xs={12} sm={6} md={2} className="dropdown-col">
+            <Col className="dropdown-col">
                 <Dropdown>
                     <DropdownButton variant="secondary" id="dropdown-3" title="Allow Alt.">
                         {dropdownOptions && dropdownOptions.allow_alternatives && dropdownOptions.allow_alternatives.length > 0 ? (
@@ -132,7 +138,7 @@ export function DropdownRow() {
             </Col>
 
             {/* Dropdown 4 */}
-            <Col xs={12} sm={6} md={2} className="dropdown-col">
+            <Col className="dropdown-col">
                 <Dropdown>
                     <DropdownButton variant="secondary" id="dropdown-4" title="Dataset">
                         {dropdownOptions && dropdownOptions.datasets && dropdownOptions.datasets.length > 0 ? (
@@ -153,7 +159,7 @@ export function DropdownRow() {
             </Col>
 
             {/* Tool dropdown 5 */}
-            <Col xs={12} sm={6} md={2} className="dropdown-col">
+            <Col className="dropdown-col">
                 <Dropdown>
                     <DropdownButton variant="secondary" id="dropdown-2" title="Tool">
                         {dropdownOptions && dropdownOptions.tools && dropdownOptions.tools.length > 0 ? (
@@ -181,7 +187,7 @@ export function DropdownRow() {
             </Col>
 
             {/* Dropdown 6 */}
-            <Col xs={12} sm={6} md={2} className="dropdown-col">
+            <Col className="dropdown-col">
                 <Dropdown>
                     <DropdownButton variant="secondary" id="dropdown-6" title="Rank">
                         {dropdownOptions && dropdownOptions.ranks && dropdownOptions.ranks.length > 0 ? (
@@ -200,16 +206,50 @@ export function DropdownRow() {
                 </Dropdown>
                 <Card>{selectedRank}</Card>
             </Col>
+
+            <Col>
+            <div className="vr" style={{height: "100%"}}></div>
+            </Col>
+            {/* Dropdown 7 */}
+            <Col className="dropdown-col">
+                <Dropdown>
+                    <DropdownButton variant="secondary" id="dropdown-7" title="Sort By">
+                        {
+                            sortByMetrics.map((item, index) => (
+                                <Dropdown.Item
+                                    key={index}
+                                    onClick={() => setSortBy([item, false])}
+                                >
+                                    {item}
+                                </Dropdown.Item>
+                            ))
+                        }
+                    </DropdownButton>
+                </Dropdown>
+                <Card>{sortBy}</Card>
+            </Col>
         </Row>
     );
 }
 
 
+export function DownloadBox(displayName: string, url: string) {
+    return (
+        <div style={{ width: "100%", display: "flex", justifyItems: "center", justifyContent: "center" }}>
+            <a className="download-box-link" href={url}>
+                <div className="download-box">
+                    <i className="bi-file-zip" style={{ fontSize: "2rem", color: "black" }}></i>
+                    {displayName}
+                </div>
+            </a>
+        </div>
+    )
+}
 
 export function DetailedGrid({ dataDetailed, width }: { dataDetailed: any[], width: number }) {
     // Initialize the state for the grid data
     const columnsToDisplay = ['Name', 'Type', 'PredictionAbundance', 'GoldStdAbundance', 'PredictionCount', 'GoldStdCount'];
-    
+
     // Subset the data
     const filteredRows = dataDetailed.map((row: any) => {
         const arr = columnsToDisplay.map((column) => {
@@ -220,7 +260,7 @@ export function DetailedGrid({ dataDetailed, width }: { dataDetailed: any[], wid
             if (!isNaN(parsedFloat)) {
                 return parsedFloat.toFixed(5);
             }
-          row[column]
+            row[column]
         });
         const type = arr[1];
         arr.push(type === 'FN' ? arr[3] : type === 'FP' ? arr[2] : '-');
@@ -231,20 +271,20 @@ export function DetailedGrid({ dataDetailed, width }: { dataDetailed: any[], wid
 
     return (
         <div className="parent-container">
-        <Grid
-            className={{
-                table: "table table-striped table-hover",
-                thead: "table-light",
-                td: "align-middle",
-                header: "gridjs-sort gridjs-sort-neutral"
-            }}
-            data={filteredRows}
-            columns={columns}
-            sort={true}
-            search={true}
-            resizable={true}
-            width={width.toString()+'px'}
-        />
+            <Grid
+                className={{
+                    table: "table table-striped table-hover",
+                    thead: "table-light",
+                    td: "align-middle",
+                    header: "gridjs-sort gridjs-sort-neutral"
+                }}
+                data={filteredRows}
+                columns={columns}
+                sort={true}
+                search={true}
+                resizable={true}
+                width={width.toString() + 'px'}
+            />
         </div>
     )
 }

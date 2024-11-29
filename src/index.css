@@ -141,3 +141,27 @@ button:focus-visible {
   max-width: 100%; /* Prevents it from exceeding container width */
   margin: 0 auto; /* Ensures proper alignment if extra space exists */
 }
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+}
+
+.download-box {
+  border-radius: 20px;
+  background-color: rgb(235, 217, 168) !important;
+  display: flex;
+  flex-direction: column;
+  font-size: 14pt !important;
+  font-weight: bold;
+  width: 200px;
+  margin: 12px;
+  padding: 16px;
+}
+
+a.download-box-link {
+  color: rgb(46, 46, 46) !important;
+}
+a:hover.download-box-link {
+  color: rgb(255, 237, 177) !important;
+}

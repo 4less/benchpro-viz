@@ -34,6 +34,9 @@ type DataContextType = {
   setFilter: (filter: Filter | null) => void;
   updateFilter: (key: string, values: string | string[]) => void;
 
+  sortBy: [string, boolean];
+  setSortBy: (filter: [string, boolean]) => void;
+
   toolColors: Record<string, string> | null;
   setToolColors: (tc: Record<string, string> | null) => void;
 
@@ -81,23 +84,7 @@ export function filterData2(data: DataRow[] | null, filter: Filter): any[] {
   });
 }
 
-
-// // Function to filter data based on filters
-// export function filterDataDetailed(data: DataRow[] | null, filter: Filter): any[] {
-//   if (!data) {
-//     return []; // Return an empty array if data is null or undefined
-//   }
-
-//   return data.filter(d => {
-//     return (
-//       (!filter.allowAlternatives || d.AllowAlternatives === filter.allowAlternatives) &&
-//       (!filter.dataset || filter.dataset === "All" || d.Dataset === filter.dataset) &&
-//       (!filter.taxonomies || filter.taxonomies.includes(d.Taxonomy)) &&
-//       (!filter.tools || filter.tools.includes(d.Tool)) &&
-//       (!filter.rank || d.Rank === filter.rank)
-//     );
-//   });
-// }
+export const sortByMetrics = ["Median", "Mean", "Min", "Max"];
 
 // Create the context with a default value
 const DataContext = createContext<DataContextType | null>(null);
@@ -118,6 +105,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [selectedDetailedFile, setSelectedDetailedFile] = useState<File | null>(null);
   const [data, setData] = useState<any[] | null>(null);
   const [filter, setFilter] = useState<Filter | null>(default_filter);
+  const [sortBy, setSortBy] = useState<[string, boolean]>(["Median", false]);
   const [dataDetailed, setDataDetailed] = useState<any[] | null>(null);
   const [toolColors, setToolColors] = useState<Record<string, string> | null>(null);
   const [toolOrder, setToolOrder] = useState<string[] | null>(null);
@@ -158,6 +146,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setDataDetailed,
         filter,
         setFilter,
+        sortBy,
+        setSortBy,
         toolColors,
         setToolColors,
         toolOrder,
