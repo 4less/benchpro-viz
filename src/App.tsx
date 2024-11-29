@@ -11,7 +11,7 @@ import { Card, Col, Form, Row, Tab, Tabs } from 'react-bootstrap';
 import './index.css';
 import { assignDynamicToolColors, assignDynamicToolOrder, DataRow, filterData2, rankOrder, readDataLogic, useDataContext } from './DataContext';
 import { metricLayout, metricTraces, profileTraces, scatterLayout, scatterSummaryTraces, scatterTraces } from './Plots';
-import { DetailedGrid, DownloadBox, DropdownRow } from './UI';
+import ProgressBar, { DetailedGrid, DownloadBox, DropdownRow } from './UI';
 import { Layout, PlotMouseEvent } from 'plotly.js';
 import Markdown from 'react-markdown'
 
@@ -95,12 +95,14 @@ function DataPage() {
   const loadFromLink = async () => {
     const url = "https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data.tsv";
 
+
+    // const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
     let response = await fetch(url);
-    let download_data = await response.blob();
+    let download_data = await response.text();
     let metadata = {
-      type: 'image/jpeg'
+      type: 'text/tsv'
     };
-    let file = new File([download_data], "test.jpg", metadata);
+    let file = new File([download_data], "data.tsv", metadata);
     
     setStatusData("pending");
     setSelectedFile(file); // Update the state
@@ -112,24 +114,103 @@ function DataPage() {
     setStatusData("success");
   }
 
-  const loadDetailedFromLink = async () => {
+  const [progress, setProgress] = React.useState(0);
+  const loadDetailedFromLink = async (setProgress: (progress: number) => void, totalBytes: number | null) => {
+    setStatusDataDetailed("pending");
     const url = "https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data_detailed.tsv";
-
-    let response = await fetch(url);
-    let download_data = await response.blob();
-    let metadata = {
-      type: 'image/jpeg'
-    };
-    let file = new File([download_data], "data.tsv", metadata);
+  
+    try {
+      const response = await fetch(url);
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+  
+      let loadedBytes = 0;
+  
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let textData = '';
+  
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+  
+          loadedBytes += value ? value.length : 0;
+          if (totalBytes) {
+            setProgress((loadedBytes / totalBytes) * 100);
+            console.log((loadedBytes / totalBytes) * 100);
+          }
+  
+          textData += decoder.decode(value, { stream: true });
+        }
+      }
+      let metadata = {
+        type: 'text/tsv'
+      };
+      let file = new File([textData], "data.tsv", metadata);
     
-    setStatusData("pending");
-    setSelectedFile(file); // Update the state
-    let data = await readData(file); // Call the function with the file name
-
-    setDataDetailed(data as DataRow[]);
-
-    setStatusData("success");
+      setSelectedDetailedFile(file); // Update the state
+      let data = await readData(file); // Call the function with the file name
+  
+      setDataDetailed(data as DataRow[]);
+  
+      setStatusDataDetailed("success");
+    } catch (error) {
+      setStatusDataDetailed("failed");
+      console.error('Error downloading file:', error);
+      setProgress(0); // Reset progress on error
+      throw error;
+    }
   }
+
+  // const loadDetailedFromLink = async () => {
+  //   setStatusDataDetailed("pending");
+  //   const apiUrl = "https://api.github.com/repos/4less/benchpro-viz/contents/default_data/data_detailed.tsv";
+  
+  //   try {
+  //     const response = await fetch(apiUrl, {
+  //       headers: { Accept: "application/vnd.github.v3.raw" },
+  //     });
+
+  //     // Check if the response is OK
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+  
+  //     const download_data = await response.text();
+  //     const metadata = { type: 'text/tsv' };
+  //     const file = new File([download_data], "data_detailed.tsv", metadata);
+  
+  //     setSelectedDetailedFile(file); // Update the state
+
+  //     const data = await readData(file); // Call the function with the file name
+  
+  //     console.dir(data);
+  
+  //     setDataDetailed(data as DataRow[]);
+  //     setStatusDataDetailed("success");
+  //   } catch (error: unknown) {
+  //     // Type narrowing for error
+  //     if (error instanceof Error) {
+  //       console.error("Failed to load the file:", error.message);
+  
+  //       if (error.name === "AbortError") {
+  //         console.error("The fetch request timed out.");
+  //       } else if (error.message.includes("Failed to fetch")) {
+  //         console.error("Network error or resource not reachable.");
+  //       } else {
+  //         console.error("An unexpected error occurred:", error.message);
+  //       }
+  //     } else {
+  //       console.error("An unknown error occurred:", error);
+  //     }
+  
+  //     setStatusDataDetailed("failed"); // Update your state to reflect failure
+  //   }
+  // }
 
   return (
     <div
@@ -164,12 +245,12 @@ function DataPage() {
                   <strong>Selected File:</strong> {selectedFile.name}
                 </div>
               )}
-              {/* <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}
+              <Card style={{ background: "#b8ff80", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None", color: "black", fontWeight: "bold", cursor: "pointer" }}
                 onClick={() => loadFromLink()}>
                 Load Example data
-              </Card> */}
+              </Card>
               <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}>
-                <a href="https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data.tsv" target="_blank" download="data.tsv">Download Example data (2.9 MB)</a>
+                <a href="https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data.tsv" target="_blank" download="data.tsv">Download Example data (2.5 MB)</a>
               </Card>
             </Card>
           </Col>
@@ -187,16 +268,16 @@ function DataPage() {
               {selectedDetailedFile && (
                 <div style={{ marginTop: '20px' }}>
                   <strong>Selected File:</strong> {selectedDetailedFile.name}
-
                 </div>
               )}
-              {/* <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}
-                onClick={() => loadDetailedFromLink()}>
-                Load Example detailed data (87.7 MB)
-              </Card> */}
+              <Card style={{ background: "#b8ff80", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None", color: "black", fontWeight: "bold", cursor: "pointer" }}
+                onClick={() => loadDetailedFromLink(setProgress, 14897229)}>
+                Load Example detailed data (14.9 MB)
+              </Card>
+              <ProgressBar progress={progress} />
 
               <Card style={{ background: "#D4EBF8", padding: 20, marginTop: 20, verticalAlign: "middle", textAlign: "center", justifyContent: "center", border: "None" }}>
-                <a href="https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data_detailed.tsv">Download Example detailed data (87.7 MB)</a>
+                <a href="https://raw.githubusercontent.com/4less/benchpro-viz/refs/heads/main/default_data/data_detailed.tsv">Download Example detailed data (14.9 MB)</a>
               </Card>
             </Card>
           </Col>

@@ -2,6 +2,7 @@ import { Card, Col, Dropdown, DropdownButton, Form, Row, Tabs, Tab } from "react
 import { Filter, sortByMetrics, useDataContext } from "./DataContext";
 import { useEffect, useState } from "react";
 import { Grid } from "gridjs-react";
+
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export function DropdownRow() {
@@ -288,3 +289,24 @@ export function DetailedGrid({ dataDetailed, width }: { dataDetailed: any[], wid
         </div>
     )
 }
+
+interface ProgressBarProps {
+  progress: number; // Progress value between 0 and 100
+}
+
+const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
+  return (
+    <div style={{ width: '100%', backgroundColor: progress > 0 ? '#4caf50' : '#f3f3f3', borderRadius: '4px', overflow: 'hidden' }}>
+      <div
+        style={{
+          width: `${progress}%`,
+          height: '10px',
+          backgroundColor: '#4caf50',
+          transition: 'width 0.2s ease',
+        }}
+      />
+    </div>
+  );
+};
+
+export default ProgressBar;
