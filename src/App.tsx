@@ -308,7 +308,7 @@ function ScatterplotPage() {
   const [filteredData, setFilteredData] = useState<DataRow[]>([]);
   const [gridData, setGridData] = useState<any[]>([]);
   const [metric, setMetric] = useState<string>("F1");
-  const [localToolOrder, setLocalToolOrder] = useState<string[]>(toolOrder!);
+  const [_localToolOrder, setLocalToolOrder] = useState<string[]>(toolOrder!);
   const [sliderValue, setSliderValue] = useState<number>(1000);
   const [sliderTableValue, setSliderTableValue] = useState<number>(1000);
   const [clickedId, setClickedId] = useState<string>("");
@@ -486,13 +486,6 @@ function BoxplotPage() {
     [gridData]
   );
 
-
-  const scatterTraces = useMemo(() => {
-    return scatterSummaryTraces({ filteredData: filteredData!, toolColors: toolColors ?? {} });
-  },
-    [filteredData]
-  );
-
   const gridLayout = useMemo(() => {
     const refilter: DataRow[] = gridData.filter(d => d.ID == clickedId);
     const orderRows = refilter.sort((a, b) => {
@@ -534,14 +527,6 @@ function BoxplotPage() {
 
   if (!data) {
     return <h1>Please upload data first</h1>;
-  }
-
-  const onClickBarplot = (event: Readonly<PlotMouseEvent>) => {
-    if (!dataDetailed) {
-      return;
-    }
-    console.log(event.points);
-    console.log(event.points[0]);
   }
 
 

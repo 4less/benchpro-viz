@@ -1,4 +1,4 @@
-import { Card, Col, Dropdown, DropdownButton, Form, Row, Tabs, Tab } from "react-bootstrap";
+import { Card, Col, Dropdown, DropdownButton, Form, Row } from "react-bootstrap";
 import { Filter, sortByMetrics, useDataContext } from "./DataContext";
 import { useEffect, useState } from "react";
 import { Grid } from "gridjs-react";

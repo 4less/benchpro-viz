@@ -1,6 +1,5 @@
-import Plotly, { Layout, PlotlyHTMLElement, PlotMouseEvent } from "plotly.js";
+import Plotly, { Layout } from "plotly.js";
 import { DataRow } from "./DataContext";
-import Plot from 'react-plotly.js';
 
 export function defaultLayout(): Layout {
   return { width: 320, height: 240, title: 'A Fancy Plot' } as Layout;
@@ -254,7 +253,6 @@ export function scatterTraces({ filteredData, metricX, metricY, toolColors }: { 
     const toolPrecision = toolData.map(row => row['Precision']);
 
     const ids = toolData.map(d => d.ID);
-    const hoverTexts = toolData.map(d => `ID: ${d.ID}<br>Dataset: ${d.Dataset}`);
     const toolDataset = toolData.map(row => row['Dataset']);
 
     return {
